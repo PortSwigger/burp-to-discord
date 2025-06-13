@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation("net.portswigger.burp.extensions:montoya-api:2025.5")
+    implementation("net.portswigger.burp.extensions:montoya-api:2025.6")
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.json:json:20250517")

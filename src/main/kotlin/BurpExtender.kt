@@ -4,14 +4,18 @@ import burp.api.montoya.http.message.StatusCodeClass
 import burp.api.montoya.http.message.requests.HttpRequest
 import burp.api.montoya.scanner.audit.AuditIssueHandler
 import burp.api.montoya.scanner.audit.issues.AuditIssue
+import burp.api.montoya.ui.settings.SettingsPanelBuilder
+import burp.api.montoya.ui.settings.SettingsPanelPersistence
+import burp.api.montoya.ui.settings.SettingsPanelSetting
+import burp.api.montoya.ui.settings.SettingsPanelWithData
 import org.json.JSONArray
 import org.json.JSONObject
 
 class BurpToDiscord : BurpExtension {
     companion object {
         var unloaded = false
-        val hookUrl = "https://discord.com/api/webhooks/1376245237290369034/iVTGvQTNdgqxGOt_e6jvwocI7YpyUWaEyKEpt5lnt6BWr_KxYseWRb86izczmObbqU1_"
         lateinit var montoyaApi: MontoyaApi
+        lateinit var settings: SettingsPanelWithData
     }
 
     override fun initialize(api: MontoyaApi?) {
@@ -26,6 +30,30 @@ class BurpToDiscord : BurpExtension {
 
         api.scanner().registerAuditIssueHandler(MyAuditIssueHandler())
 
+        //Create settings pannel
+        settings = SettingsPanelBuilder.settingsPanel()
+            .withPersistence(SettingsPanelPersistence.PROJECT_SETTINGS)
+            .withTitle("discord-to-burp")
+            .withDescription("""
+                Settings for discord-to-burp extension: 
+
+                To grab your webhook url:
+                1) Right-click your chosen discord channel
+                2) Select "Edit Channel"
+                3) Select "Integrations" -> "Webhooks"
+                4) Create a new webhook and copy the URL
+
+                To grab discord user ID (this will @ you in discord):
+                1) Under "Advanced" setttings, enable "Developer Mode"
+                2) Under "My Account" select "..." next to your username and then select "Copy User ID"
+                
+            """.trimIndent())
+            .withKeywords("Discord", "discord-to-burp", "Notifications")
+            .withSettings(SettingsPanelSetting.stringSetting("Discord Webhook URL", "https://discord.com/api/webhooks/<your-webhook-id>"))
+            .withSettings(SettingsPanelSetting.stringSetting("Discord User ID", "000000000000000000"))
+            .build()
+
+        api.userInterface().registerSettingsPanel(settings)
 
 
         //Register unloading handler
@@ -39,7 +67,18 @@ class BurpToDiscord : BurpExtension {
         override fun handleNewAuditIssue(issue: AuditIssue?) {
             montoyaApi.logging().logToOutput("New Issue Reported!!!")
 
+            if (settings.getString("Discord Webhook URL") == "https://discord.com/api/webhooks/<your-webhook-id>") {
+                montoyaApi.logging().logToOutput("You need to set your discord webhook URL for this to work!")
+                return
+            }
+
+            if (settings.getString("Discord User ID") == "000000000000000000") {
+                montoyaApi.logging().logToOutput("You need to set your discord user ID for this to work!")
+                return
+            }
+
             val issueName = issue?.name()
+            // Prevent discord from parsing the URL as a URL
             val url = issue?.baseUrl().toString().replace("/", "\\/")
             val details = issue?.detail().toString().replace("/", "\\/")
             val requestResponses = issue?.requestResponses()
@@ -74,10 +113,13 @@ $resp
                         ```""".trimIndent())
                     attachmentsList.put(attachment)
                 }
+            } else {
+                montoyaApi.logging().logToError("Reported issue had no attached requestResponse... Skipping")
+                return
             }
 
             val content = """
-                > <@177495962825129984>, new research issue!
+                > <@${settings.getString("Discord User ID")}>, new issue!
                 > **Title**: $issueName
                 > **URL**: $url
                 > **Details**: $details
@@ -86,7 +128,7 @@ $resp
             var jsonContent = JSONObject()
             jsonContent.put("content", content)
 
-            val dicordRequest = HttpRequest.httpRequestFromUrl(hookUrl).
+            val dicordRequest = HttpRequest.httpRequestFromUrl(settings.getString("Discord Webhook URL")).
                 withMethod("POST").
                 withHeader("Content-Type", "application/json").
                 withBody(jsonContent.toString())
@@ -104,7 +146,7 @@ $resp
 
                 attachmentJsonContent.put("embeds", smallArray)
 
-                val discordAttachmentRequest = HttpRequest.httpRequestFromUrl(hookUrl).
+                val discordAttachmentRequest = HttpRequest.httpRequestFromUrl(settings.getString("Discord Webhook URL")).
                         withMethod("POST").
                         withHeader("Content-Type","application/json").
                         withBody(attachmentJsonContent.toString())
