@@ -51,6 +51,7 @@ class BurpToDiscord : BurpExtension {
             .withKeywords("Discord", "discord-to-burp", "Notifications")
             .withSettings(SettingsPanelSetting.stringSetting("Discord Webhook URL", "https://discord.com/api/webhooks/<your-webhook-id>"))
             .withSettings(SettingsPanelSetting.stringSetting("Discord User ID", "000000000000000000"))
+            .withSettings(SettingsPanelSetting.booleanSetting("Include request/response data", true))
             .build()
 
         api.userInterface().registerSettingsPanel(settings)
@@ -84,7 +85,13 @@ class BurpToDiscord : BurpExtension {
             val requestResponses = issue?.requestResponses()
             var attachmentsList = JSONArray()
 
-            if (requestResponses != null) {
+
+            if (requestResponses == null) {
+                montoyaApi.logging().logToError("Reported issue had no attached requestResponse... Skipping")
+                return
+            }
+
+            if (settings.getBoolean("Include request/response data")) {
                 for (requestResponse in requestResponses) {
                     var req = requestResponse.request().toString()
 
@@ -113,9 +120,6 @@ $resp
                         ```""".trimIndent())
                     attachmentsList.put(attachment)
                 }
-            } else {
-                montoyaApi.logging().logToError("Reported issue had no attached requestResponse... Skipping")
-                return
             }
 
             val content = """
@@ -139,6 +143,8 @@ $resp
                 montoyaApi.logging().logToError("Error when sending issue to discord: ${requestResponse.response().statusCode()} | ${requestResponse.response().bodyToString()}")
             }
 
+
+            // This will only do something if there is actually an entry in attachmentsList
             for (attachment in attachmentsList) {
                 val attachmentJsonContent = JSONObject()
                 val smallArray = JSONArray()
@@ -156,7 +162,6 @@ $resp
                     montoyaApi.logging().logToError("Error when sending attachments to discord: ${requestResponseAttachments.response().statusCode()} | ${requestResponseAttachments.response().bodyToString()}")
                 }
             }
-
         }
     }
 }
