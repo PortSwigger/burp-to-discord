@@ -29,13 +29,13 @@ class BurpToDiscord : BurpExtension {
         api.logging().logToOutput("Loaded $name")
 
         api.scanner().registerAuditIssueHandler(MyAuditIssueHandler())
-
+S
         //Create settings pannel
         settings = SettingsPanelBuilder.settingsPanel()
             .withPersistence(SettingsPanelPersistence.PROJECT_SETTINGS)
-            .withTitle("discord-to-burp")
+            .withTitle("burp-to-discord")
             .withDescription("""
-                Settings for discord-to-burp extension: 
+                Settings for burp-to-discord extension: 
 
                 To grab your webhook url:
                 1) Right-click your chosen discord channel
@@ -48,7 +48,7 @@ class BurpToDiscord : BurpExtension {
                 2) Under "My Account" select "..." next to your username and then select "Copy User ID"
                 
             """.trimIndent())
-            .withKeywords("Discord", "discord-to-burp", "Notifications")
+            .withKeywords("Discord", "burp-to-discord", "Notifications")
             .withSettings(SettingsPanelSetting.stringSetting("Discord Webhook URL", "https://discord.com/api/webhooks/<your-webhook-id>"))
             .withSettings(SettingsPanelSetting.stringSetting("Discord User ID", "000000000000000000"))
             .withSettings(SettingsPanelSetting.booleanSetting("Include request/response data", true))
