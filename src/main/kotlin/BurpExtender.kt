@@ -29,7 +29,7 @@ class BurpToDiscord : BurpExtension {
         api.logging().logToOutput("Loaded $name")
 
         api.scanner().registerAuditIssueHandler(MyAuditIssueHandler())
-S
+        
         //Create settings pannel
         settings = SettingsPanelBuilder.settingsPanel()
             .withPersistence(SettingsPanelPersistence.PROJECT_SETTINGS)
