@@ -7,7 +7,7 @@ SerialVersion: 2
 MinPlatformVersion: 24
 ProOnly: True
 Author: Thomas Stacey
-ShortDescription: This extension listens to all issues reported in Burp and sends the issue details to a Discord webhook, ideal for long-running research scans and regular scanning.
+ShortDescription: Reports found issues to Discord via a webhook.
 EntryPoint: burp-to-discord-1.0.0.jar
 BuildCommand: ./gradlew build test
 SupportedProducts: Pro
