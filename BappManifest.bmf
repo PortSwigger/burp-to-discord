@@ -3,11 +3,11 @@ ExtensionType: 1
 Name: Burp to Discord
 RepoName: burp-to-discord
 ScreenVersion: 1.0.0
-SerialVersion: 3
+SerialVersion: 4
 MinPlatformVersion: 24
 ProOnly: True
 Author: Thomas Stacey
 ShortDescription: Reports found issues to Discord via a webhook.
-EntryPoint: burp-to-discord-1.0.0.jar
+EntryPoint: burp-to-discord-1.0.0-all.jar
 BuildCommand: ./gradlew shadowJar
 SupportedProducts: Pro
