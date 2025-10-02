@@ -5,9 +5,9 @@ RepoName: burp-to-discord
 ScreenVersion: 1.0.0
 SerialVersion: 1
 MinPlatformVersion: 24
-ProOnly: False
-Author: t0xodile
+ProOnly: True
+Author: Thomas Stacey
 ShortDescription: This extension listens to all issues reported in Burp and sends the issue details to a Discord webhook, ideal for long-running research scans and regular scanning.
 EntryPoint: burp-to-discord-1.0.0.jar
 BuildCommand: ./gradlew build test
-SupportedProducts: Pro, Community
+SupportedProducts: Pro
