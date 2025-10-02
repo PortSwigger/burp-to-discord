@@ -1,0 +1,29 @@
+<p>
+The burp-to-discord extension listens to all issues reported (from any source) and sends the issue details to a Discord webhook. It was designed to work in combination with long-running research scans from tools such as BulkScan, but it will also function properly with regular Burp.
+</p>
+
+<h2>Features</h2>
+
+<p>
+The extension enables notifications for reported issues to be sent directly to Discord, allowing for quick and efficient monitoring of research scans or regular Burp operations.
+</p>
+
+<p>
+By involving the use of Discord webhooks, the extension circumvents the issue of maximum message size that Discord imposes. Large issues are sent in multiple messages, with any single request or response trimmed to prevent overload errors.
+</p>
+
+<p>
+The extension also boasts the useful feature of making configuration a project setting as opposed to a user setting. This design decision was made to prevent potential accidental leaking of sensitive information via notifications.
+</p>
+
+<h2>Usage</h2>
+
+<ol>
+<li>Create a Discord webhook and paste the URL into your project settings.</li>
+<li>Acquire your Discord user ID and paste that into your project settings.</li>
+<li>The extension will now relay reported issues to your specified Discord webhook.</li>
+</ol>
+
+<p>
+If you have a work-related project and mistakenly enable this extension, your other files settings wont inadvertently lead to the leaking of sensitive information or data to Discord - a testament to the extensions user-friendly design. Keep in mind that any overly large request or response might be abbreviated to prevent errors.
+</p>   
