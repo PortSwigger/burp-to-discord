@@ -9,5 +9,5 @@ ProOnly: True
 Author: Thomas Stacey
 ShortDescription: Reports found issues to Discord via a webhook.
 EntryPoint: burp-to-discord-1.0.0-all.jar
-BuildCommand: ./gradlew shadowJar
+BuildCommand: ./gradlew build shadowJar
 SupportedProducts: Pro
