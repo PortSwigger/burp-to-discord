@@ -3,7 +3,7 @@ ExtensionType: 1
 Name: Burp to Discord
 RepoName: burp-to-discord
 ScreenVersion: 1.0.0
-SerialVersion: 6
+SerialVersion: 7
 MinPlatformVersion: 24
 ProOnly: True
 Author: Thomas Stacey
