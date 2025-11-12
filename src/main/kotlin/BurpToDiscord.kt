@@ -8,6 +8,10 @@ import burp.api.montoya.ui.settings.SettingsPanelBuilder
 import burp.api.montoya.ui.settings.SettingsPanelPersistence
 import burp.api.montoya.ui.settings.SettingsPanelSetting
 import burp.api.montoya.ui.settings.SettingsPanelWithData
+import com.vladsch.flexmark.ext.tables.TablesExtension
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
+import com.vladsch.flexmark.parser.Parser
+import com.vladsch.flexmark.util.data.MutableDataSet
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -92,7 +96,10 @@ class BurpToDiscord : BurpExtension {
             val issueName = issue?.name()
             // Prevent discord from parsing the URL as a URL
             val url = issue?.baseUrl().toString().replace("/", "\\/")
-            val details = issue?.detail().toString().replace("/", "\\/")
+            val options = MutableDataSet()
+            options.set(Parser.EXTENSIONS, listOf(TablesExtension.create()))
+            val converter = FlexmarkHtmlConverter.builder(options).build()
+            val details = converter.convert(issue?.detail().toString())
             val requestResponses = issue?.requestResponses()
             val attachmentsList = JSONArray()
 
@@ -121,16 +128,7 @@ class BurpToDiscord : BurpExtension {
                     val attachment = JSONObject()
                     attachment.put(
                         "description",
-                        """
-                        Request #${requestResponses.indexOf(requestResponse) + 1}:
-                                                ```
-                        $req
-                                                ```
-                                                Response #${requestResponses.indexOf(requestResponse) + 1}:
-                                                ```
-                        $resp
-                                                ```
-                        """.trimIndent(),
+                        "\r\nRequest #${requestResponses.indexOf(requestResponse) + 1}:\r\n```http\r\n$req\r\n```\r\nResponse #${requestResponses.indexOf(requestResponse) + 1}:\r\n```http\r\n$resp\r\n```\r\n".trimIndent(),
                     )
                     attachmentsList.put(attachment)
                 }
@@ -140,10 +138,12 @@ class BurpToDiscord : BurpExtension {
 
             val content: String
 
-            if (settings.getBoolean("@Discord User ID")) {
+            val discordUserID = settings.getString("Optional: Discord User ID")
+
+            if (settings.getBoolean("@Discord User ID") && discordUserID != "000000000000000000") {
                 content =
                     """
-                    > <@${settings.getString("Optional: Discord User ID")}>, new issue!
+                    > <@$discordUserID>, new issue!
                     > **Title**: $issueName
                     > **URL**: $url
                     > **Details**: $details

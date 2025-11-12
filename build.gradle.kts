@@ -16,6 +16,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.json:json:20250517")
+    implementation("com.vladsch.flexmark:flexmark-html2md-converter:0.64.8")
+    implementation("com.vladsch.flexmark:flexmark-ext-tables:0.64.8")
 }
 
 tasks.test {
